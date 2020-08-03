@@ -37,12 +37,12 @@ class MinIndexedDHeapTest {
         assertTrue(iPQueue.isEmpty())
     }
 
-    @Test
-    fun `Inserting null item should throw the IllegalArgumentException`() {
-        assertThrows(IllegalArgumentException::class.java) {
-            iPQueue.insert(firstIndex, null)
-        }
-    }
+//    @Test
+//    fun `Inserting null item should throw the IllegalArgumentException`() {
+//        assertThrows(IllegalArgumentException::class.java) {
+//            iPQueue.insert(firstIndex, null)
+//        }
+//    }
 
     @Test
     fun `Deleting item when heap isEmpty should throw NoSuchElementException`() {
@@ -240,7 +240,6 @@ class MinIndexedDHeapTest {
         }
     }
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Update item to smallest should peek it`() {
         sortedPatientsList.forEachIndexed { index, item ->
@@ -257,7 +256,6 @@ class MinIndexedDHeapTest {
         assertEquals(newMinPatient, iPQueue.peekMinValue())
     }
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Increase update item to smaller should not update it`() {
         sortedPatientsList.forEachIndexed { index, item ->
@@ -269,14 +267,13 @@ class MinIndexedDHeapTest {
         val newMinPatient = sortedPatientsList.min()!!.copy()
 
         newMinPatient.urgency--
-        iPQueue.increase(newMinPatientKey, newMinPatient)
+        iPQueue.increaseKey(newMinPatientKey, newMinPatient)
 
         assertNotEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
 
         assertNotEquals(newMinPatient, iPQueue.peekMinValue())
     }
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Increase update item to bigger should  update it`() {
         sortedPatientsList.forEachIndexed { index, item ->
@@ -288,7 +285,7 @@ class MinIndexedDHeapTest {
         val newMinPatient = sortedPatientsList.min()!!.copy()
 
         newMinPatient.urgency++
-        iPQueue.increase(newMinPatientKey, newMinPatient)
+        iPQueue.increaseKey(newMinPatientKey, newMinPatient)
 
         assertEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
 
@@ -296,7 +293,6 @@ class MinIndexedDHeapTest {
     }
 
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Decrease update item to bigger should not update it`() {
         sortedPatientsList.forEachIndexed { index, item ->
@@ -308,7 +304,7 @@ class MinIndexedDHeapTest {
         val newMinPatient = sortedPatientsList.min()!!.copy()
 
         newMinPatient.urgency++
-        iPQueue.decrease(newMinPatientKey, newMinPatient)
+        iPQueue.decreaseKey(newMinPatientKey, newMinPatient)
 
         assertNotEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
 
@@ -316,7 +312,6 @@ class MinIndexedDHeapTest {
 
     }
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Decrease update item to smaller should  update it`() {
         sortedPatientsList.forEachIndexed { index, item ->
@@ -328,7 +323,7 @@ class MinIndexedDHeapTest {
         val newMinPatient = sortedPatientsList.min()!!.copy()
 
         newMinPatient.urgency--
-        iPQueue.decrease(newMinPatientKey, newMinPatient)
+        iPQueue.decreaseKey(newMinPatientKey, newMinPatient)
 
         assertEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
 
@@ -336,7 +331,6 @@ class MinIndexedDHeapTest {
 
     }
 
-    @Suppress("NonAsciiCharacters")
     @Test
     fun `Delete smallest item should not peek it`() {
 
@@ -351,6 +345,20 @@ class MinIndexedDHeapTest {
         iPQueue.delete(newMinPatientKey)
 
         assertNotEquals(newMinPatient, iPQueue.peekMinValue())
+
+    }
+
+    @Test
+    fun `Recursively checks if this heap is a min heap`() {
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertTrue(iPQueue.isMinHeap())
+
+        sortedPatientsList.indices.forEach { index ->
+            iPQueue.delete(index)
+        }
+        assertTrue(iPQueue.isMinHeap())
 
     }
 
