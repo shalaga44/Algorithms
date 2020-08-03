@@ -2,6 +2,8 @@ package com.shalaga44.algorithms.datassructures.priorityqueue
 
 import java.util.*
 import kotlin.NoSuchElementException
+import kotlin.math.max
+import kotlin.math.min
 
 open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     // Current number of elements in the heap.
@@ -19,22 +21,24 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
 
     // The Position Map (pm) maps Key Indexes (ki) to where the position of that
     // key is represented in the priority queue in the domain [0, sz).
-    val pm: IntArray
+    private val pm: IntArray
 
     // The Inverse Map (im) stores the indexes of the keys in the range
     // [0, sz) which make up the priority queue. It should be noted that
     // 'im' and 'pm' are inverses of each other, so: pm[im[i]] = im[pm[i]] = i
-    val im: IntArray
+    private val im: IntArray
 
     // The values associated with the keys. It is very important  to note
     // that this array is indexed by the key indexes (aka 'ki').
-    val values: Array<Any?>
+    private val values: Array<Any?>
     fun size(): Int {
         return sz
     }
 
-    val isEmpty: Boolean
-        get() = sz == 0
+    fun isEmpty(): Boolean {
+        return sz == 0
+
+    }
 
     operator fun contains(ki: Int): Boolean {
         keyInBoundsOrThrow(ki)
@@ -42,7 +46,7 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     }
 
     fun peekMinKeyIndex(): Int {
-        isNotEmptyOrThrow
+        isNotEmptyOrThrow()
         return im[0]
     }
 
@@ -52,8 +56,9 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
         return minki
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun peekMinValue(): T? {
-        isNotEmptyOrThrow
+        isNotEmptyOrThrow()
         return values[im[0]] as T?
     }
 
@@ -72,11 +77,13 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
         swim(sz++)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun valueOf(ki: Int): T? {
         keyExistsOrThrow(ki)
         return values[ki] as T?
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun delete(ki: Int): T? {
         keyExistsOrThrow(ki)
         val i = pm[ki]
@@ -90,6 +97,7 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
         return value
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun update(ki: Int, value: T): T? {
         keyExistsAndValueNotNullOrThrow(ki, value as Any)
         val i = pm[ki]
@@ -119,16 +127,18 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     }
 
     /* Helper functions */
+    @Suppress("NAME_SHADOWING")
     private fun sink(i: Int) {
         var i = i
         var j = minChild(i)
         while (j != -1) {
             swap(i, j)
             i = j
-            j = minChild(i)
+            j = minChild(j)
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     private fun swim(i: Int) {
         var i = i
         while (less(i, parent[i])) {
@@ -138,11 +148,12 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     }
 
     // From the parent node at index i find the minimum child below it
+    @Suppress("NAME_SHADOWING")
     private fun minChild(i: Int): Int {
         var i = i
         var index = -1
         val from = child[i]
-        val to = Math.min(sz, from + D)
+        val to = min(sz, from + D)
         for (j in from until to) if (less(j, i)) {
             i = j
             index = i
@@ -163,6 +174,7 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     private fun less(i: Int, j: Int): Boolean {
         return (values[im[i]] as Comparable<T?>?)!! < (values[im[j]] as T?)
     }
+
     @Suppress("UNCHECKED_CAST")
     private fun less(obj1: Any?, obj2: Any?): Boolean {
         return (obj1 as Comparable<T?>?)!! < (obj2 as T?)
@@ -175,10 +187,9 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     }
 
     /* Helper functions to make the code more readable. */
-    private val isNotEmptyOrThrow: Unit
-        private get() {
-            if (isEmpty) throw NoSuchElementException("Priority queue underflow")
-        }
+    private fun isNotEmptyOrThrow() {
+        if (isEmpty()) throw NoSuchElementException("Priority queue underflow")
+    }
 
     private fun keyExistsAndValueNotNullOrThrow(ki: Int, value: Any) {
         keyExistsOrThrow(ki)
@@ -204,7 +215,7 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
 
     private fun isMinHeap(i: Int): Boolean {
         val from = child[i]
-        val to = Math.min(sz, from + D)
+        val to = min(sz, from + D)
         for (j in from until to) {
             if (!less(i, j)) return false
             if (!isMinHeap(j)) return false
@@ -215,18 +226,13 @@ open class MinIndexedDHeap<T>(degree: Int, maxSize: Int) {
     // Initializes a D-ary heap with a maximum capacity of maxSize.
     init {
         require(maxSize > 0) { "maxSize <= 0" }
-        D = 2.coerceAtLeast(degree)
-        N = (D + 1).coerceAtLeast(maxSize)
-        im = IntArray(N)
-        pm = IntArray(N)
-        child = IntArray(N)
-        parent = IntArray(N)
+        D = max(2, degree)
+        N = max((D + 1), maxSize)
+        im = IntArray(N) { -1 }
+        pm = IntArray(N) { -1 }
+        child = IntArray(N) { it * D + 1 }
+        parent = IntArray(N) { (it - 1) / D }
         values = arrayOfNulls(N)
-        for (i in 0 until N) {
-            parent[i] = (i - 1) / D
-            child[i] = i * D + 1
-            im[i] = -1
-            pm[i] = im[i]
-        }
     }
 }
+

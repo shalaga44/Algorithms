@@ -15,13 +15,12 @@ data class Patient(var disease: String, var urgency: Int) : Comparable<Patient> 
 
 class MinIndexedDHeapTest {
 
-    private val ipqIsEmptyMessage = "Priority queue underflow"
 
     private lateinit var iPQueue: MinIndexedBinaryHeap<Patient>
     private val shalaga = Patient("can not talk", 100)
     private val firstIndex = 0
     private var sortedPatientsList = generatePatients(10).toList()
-    private var randomPatientsList = generatePatients(10).shuffled()
+    private var randomPatientsList = generatePatients(50).shuffled()
 
 
     @BeforeEach
@@ -35,58 +34,52 @@ class MinIndexedDHeapTest {
 
     @Test
     fun `isEmpty should return true for empty heap`() {
-        assertTrue(iPQueue.isEmpty)
+        assertTrue(iPQueue.isEmpty())
     }
 
     @Test
     fun `Inserting null item should throw the IllegalArgumentException`() {
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             iPQueue.insert(firstIndex, null)
         }
-        assertEquals("value cannot be null", exception.localizedMessage)
     }
 
     @Test
     fun `Deleting item when heap isEmpty should throw NoSuchElementException`() {
-        val exception = assertThrows(NoSuchElementException::class.java) {
+        assertThrows(NoSuchElementException::class.java) {
             iPQueue.delete(firstIndex)
         }
-        assertEquals("Index does not exist; received: $firstIndex", exception.localizedMessage)
     }
 
     @Test
     fun `PollMinValue item when heap isEmpty should throw NoSuchElementException`() {
-        val exception = assertThrows(NoSuchElementException::class.java) {
+        assertThrows(NoSuchElementException::class.java) {
             iPQueue.pollMinValue()
         }
-        assertEquals(ipqIsEmptyMessage, exception.localizedMessage)
 
     }
 
     @Test
-    fun `pollMinKeyIndex item when heap isEmpty should throw NoSuchElementException`() {
-        val exception = assertThrows(NoSuchElementException::class.java) {
+    fun `pollMinKeyIndex item when heap isEmpty() should throw NoSuchElementException`() {
+        assertThrows(NoSuchElementException::class.java) {
             iPQueue.pollMinKeyIndex()
         }
-        assertEquals(ipqIsEmptyMessage, exception.localizedMessage)
 
     }
 
     @Test
     fun `PeekMinValue item when heap isEmpty should throw NoSuchElementException`() {
-        val exception = assertThrows(NoSuchElementException::class.java) {
+        assertThrows(NoSuchElementException::class.java) {
             iPQueue.peekMinValue()
         }
-        assertEquals(ipqIsEmptyMessage, exception.localizedMessage)
 
     }
 
     @Test
     fun `PeekMinKeyIndex item when heap isEmpty should throw NoSuchElementException`() {
-        val exception = assertThrows(NoSuchElementException::class.java) {
+        assertThrows(NoSuchElementException::class.java) {
             iPQueue.peekMinKeyIndex()
         }
-        assertEquals(ipqIsEmptyMessage, exception.localizedMessage)
 
     }
 
@@ -124,13 +117,13 @@ class MinIndexedDHeapTest {
     fun `isEmpty should return true after one insert & one poll`() {
         iPQueue.insert(firstIndex, shalaga)
         assertEquals(shalaga, iPQueue.pollMinValue())
-        assertTrue(iPQueue.isEmpty)
+        assertTrue(iPQueue.isEmpty())
     }
 
     @Test
     fun `isEmpty should return false after one insert`() {
         iPQueue.insert(firstIndex, shalaga)
-        assertFalse(iPQueue.isEmpty)
+        assertFalse(iPQueue.isEmpty())
     }
 
     @Test
@@ -205,7 +198,7 @@ class MinIndexedDHeapTest {
         randomPatientsList.indices.forEach { index ->
             iPQueue.delete(index)
         }
-        assertTrue(iPQueue.isEmpty)
+        assertTrue(iPQueue.isEmpty())
     }
 
     @Test
@@ -250,25 +243,114 @@ class MinIndexedDHeapTest {
     @Suppress("NonAsciiCharacters")
     @Test
     fun `Update item to smallest should peek it`() {
-        val شلاقه = Patient("ما بيقدر يكلم", -5)
-        val shalagaKey = 0
-        val محي_الدين = Patient("زهج بس", -1)
-        val mohiaoKey = 1
-        val شيخو = Patient("عدم موضوع", 0)
-        val moKey = 2
-        val ود_سيف = Patient("شامي الوضع", -3)
-        val saifKey = 3
-        iPQueue.insert(shalagaKey, شلاقه)
-        iPQueue.insert(mohiaoKey, محي_الدين)
-        iPQueue.insert(moKey, شيخو)
-        iPQueue.insert(saifKey, ود_سيف)
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
 
-        assertEquals(شلاقه, iPQueue.peekMinValue())
-        محي_الدين.disease = "منفسن"
-        محي_الدين.urgency = -10
-        iPQueue.update(mohiaoKey, محي_الدين)
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
 
-        assertEquals(محي_الدين, iPQueue.peekMinValue())
+        newMinPatient.urgency--
+        iPQueue.update(newMinPatientKey, newMinPatient)
+
+        assertEquals(newMinPatient, iPQueue.peekMinValue())
+    }
+
+    @Suppress("NonAsciiCharacters")
+    @Test
+    fun `Increase update item to smaller should not update it`() {
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
+
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
+
+        newMinPatient.urgency--
+        iPQueue.increase(newMinPatientKey, newMinPatient)
+
+        assertNotEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
+
+        assertNotEquals(newMinPatient, iPQueue.peekMinValue())
+    }
+
+    @Suppress("NonAsciiCharacters")
+    @Test
+    fun `Increase update item to bigger should  update it`() {
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
+
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
+
+        newMinPatient.urgency++
+        iPQueue.increase(newMinPatientKey, newMinPatient)
+
+        assertEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
+
+        assertEquals(newMinPatient, iPQueue.peekMinValue())
+    }
+
+
+    @Suppress("NonAsciiCharacters")
+    @Test
+    fun `Decrease update item to bigger should not update it`() {
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
+
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
+
+        newMinPatient.urgency++
+        iPQueue.decrease(newMinPatientKey, newMinPatient)
+
+        assertNotEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
+
+        assertNotEquals(newMinPatient, iPQueue.peekMinValue())
+
+    }
+
+    @Suppress("NonAsciiCharacters")
+    @Test
+    fun `Decrease update item to smaller should  update it`() {
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
+
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
+
+        newMinPatient.urgency--
+        iPQueue.decrease(newMinPatientKey, newMinPatient)
+
+        assertEquals(newMinPatient, iPQueue.valueOf(newMinPatientKey))
+
+        assertEquals(newMinPatient, iPQueue.peekMinValue())
+
+    }
+
+    @Suppress("NonAsciiCharacters")
+    @Test
+    fun `Delete smallest item should not peek it`() {
+
+        sortedPatientsList.forEachIndexed { index, item ->
+            iPQueue.insert(index, item)
+        }
+        assertEquals(sortedPatientsList.min(), iPQueue.peekMinValue())
+
+        val newMinPatientKey = sortedPatientsList.indexOf(sortedPatientsList.min())
+        val newMinPatient = sortedPatientsList.min()!!.copy()
+
+        iPQueue.delete(newMinPatientKey)
+
+        assertNotEquals(newMinPatient, iPQueue.peekMinValue())
 
     }
 
