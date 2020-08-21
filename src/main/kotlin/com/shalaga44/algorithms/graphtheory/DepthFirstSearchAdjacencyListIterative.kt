@@ -3,32 +3,32 @@ package com.shalaga44.algorithms.graphtheory
 import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.WeightedEdge
 import java.util.*
 
+
 class DepthFirstSearchAdjacencyListIterative(
     private val graph: Map<Int, MutableList<WeightedEdge>>, totalNodes: Int
 ) {
 
-    // Instead of using boolean array it's super efficient to just use Integer array
-    // and incrementing the token every time you want to set all it's values to false
-    private var visited = IntArray(totalNodes) { 0 }
-    private var visitedToken = 1
 
+    private val visited = BooleanArray(totalNodes) { false }
     private val stack = Stack<Int>()
+
+    private var isNotSolved = true
     private var count = 0
 
     fun getNodesCountStartingFrom(node: Int): Int {
-        count = 0
-        visitedToken++
-        dfs(node)
+        if (isNotSolved)
+            dfs(node)
         return count
     }
 
-    private fun dfs(start: Int) {
-        visit(start)
-        while (!stack.isEmpty()) {
-            val node = stack.pop()
-            if (isNotVisited(node))
-                visit(node)
+    private fun dfs(startNode: Int) {
+        visit(startNode)
+        while (stack.isNotEmpty()) {
+            val nextNode = stack.pop()
+            if (nextNode.isNotVisited())
+                visit(nextNode)
         }
+        isNotSolved = false
     }
 
 
@@ -36,7 +36,7 @@ class DepthFirstSearchAdjacencyListIterative(
         count++
         markAsVisited(node)
         getEdgesOf(node).forEach { edge ->
-            if (isNotVisited(edge.to))
+            if (edge.to.isNotVisited())
                 stack.push(edge.to)
         }
 
@@ -48,14 +48,10 @@ class DepthFirstSearchAdjacencyListIterative(
 
 
     private fun markAsVisited(node: Int) {
-        visited[node] = visitedToken
+        visited[node] = true
     }
 
 
-    private fun isNotVisited(node: Int): Boolean {
-        return visited[node] != visitedToken
-
-    }
-
-
+    private fun Int.isNotVisited(): Boolean =
+        !visited[this]
 }
