@@ -1,6 +1,6 @@
 package com.shalaga44.algorithms.graphtheory
 
-import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.WeightedEdge
+import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edges.WeightedEdge
 import java.util.*
 
 class ConnectedComponentsDfsSolverAdjacencyList(

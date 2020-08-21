@@ -1,11 +1,11 @@
 package com.shalaga44.algorithms.graphtheory
 
-import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.WeightedEdge
+import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edge
 import java.util.*
 
 
 class DepthFirstSearchAdjacencyListIterative(
-    private val graph: Map<Int, MutableList<WeightedEdge>>, totalNodes: Int
+    private val graph: Map<Int, List<Edge>>, totalNodes: Int
 ) {
 
 
@@ -42,7 +42,7 @@ class DepthFirstSearchAdjacencyListIterative(
 
     }
 
-    private fun getEdgesOf(node: Int): List<WeightedEdge> {
+    private fun getEdgesOf(node: Int): List<Edge> {
         return graph[node] ?: emptyList()
     }
 
