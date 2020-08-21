@@ -18,24 +18,27 @@ class ConnectedComponentsDfsSolverAdjacencyListTests {
     }
 
     @Test
-    fun `getComponents() in fully Connected graph must integer array full of ones`() {
+    fun `getComponents() in fully Connected graph must integer array full of zeros`() {
         graph = createFullyConnectedGraph()
         val solver = ConnectedComponentsDfsSolverAdjacencyList(graph, graph.N)
         val components = solver.getComponents()
         (0 until graph.N).forEach {
-            assertEquals(1, components[it])
+            assertEquals(0, components[it])
         }
     }
 
 
     @Test
     fun `Connected Components Test`() {
-        (0..10).forEach { testConnectedComponents ->
-            graph = createcomponentsGraph(testConnectedComponents)
+        (0..10).forEach { totalConnectedComponents ->
+            graph = createcomponentsGraph(totalConnectedComponents)
             val solver = ConnectedComponentsDfsSolverAdjacencyList(graph, graph.N)
             val components = solver.getComponents()
-            (0 until graph.N).forEach {
-                assertEquals(testConnectedComponents , components[it])
+            var testComponentCounter = -1
+            (0 until graph.N).forEach { node ->
+                if (node % 3 == 0)
+                    testComponentCounter++
+                assertEquals(testComponentCounter, components[node])
             }
         }
     }
