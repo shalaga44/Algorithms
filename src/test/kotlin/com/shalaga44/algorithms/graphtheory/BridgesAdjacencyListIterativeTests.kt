@@ -4,7 +4,6 @@ import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.UnweightedDirectedAd
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-private val <A, B> Pair<A, B>.reversed get() = this.second to this.first
 
 
 class BridgesAdjacencyListIterativeTests {
@@ -23,7 +22,7 @@ class BridgesAdjacencyListIterativeTests {
         graph.addUndirectedEdge(7, 8)
         graph.addUndirectedEdge(8, 5)
         val testActualBridges = listOf(4 to 3, 2 to 3, 2 to 5)
-        val solver = BridgesAdjacencyList(graph.getUndirectedGraphMap(), graph.N)
+        val solver = BridgesAdjacencyListIterative(graph.getUndirectedGraphMap(), graph.N)
         val bridges = solver.findBridges()
         testActualBridges.forEach { actualBridge ->
             assertTrue(
@@ -35,4 +34,6 @@ class BridgesAdjacencyListIterativeTests {
         }
 
     }
+    private val <A, B> Pair<A, B>.reversed get() = this.second to this.first
+
 }
