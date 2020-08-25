@@ -22,7 +22,7 @@ class BridgesAdjacencyListIterativeTests {
         graph.addUndirectedEdge(7, 8)
         graph.addUndirectedEdge(8, 5)
         val testActualBridges = listOf(4 to 3, 2 to 3, 2 to 5)
-        val solver = BridgesAdjacencyListIterative(graph.getUndirectedGraphMap(), graph.N)
+        val solver = BridgesAdjacencyListIterative(graph.asAdjacencyList(), graph.N)
         val bridges = solver.findBridges()
         testActualBridges.forEach { actualBridge ->
             assertTrue(

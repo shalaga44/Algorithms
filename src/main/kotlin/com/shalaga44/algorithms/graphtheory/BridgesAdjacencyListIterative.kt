@@ -1,11 +1,10 @@
 package com.shalaga44.algorithms.graphtheory
 
 
-import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edge
 import java.util.*
 
 
-class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Edge>>, private val n: Int) {
+class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, private val n: Int) {
     private var id = 0
     private val callBackToken = -1
     private var isNotSolved = true
@@ -47,7 +46,7 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Edge>>, pri
         markAsVisited(node)
         setNodeId(node)
         initLowLinkValue(node)
-        getEdgesOf(node).map { it.to }.forEach { newNode ->
+        getEdgesOf(node).forEach { newNode ->
             if (newNode.isNotVisited())
                 addToCallBackStack(newNode, node)
             else updateCurrentNodeLowLink(newNode, node)
@@ -85,11 +84,11 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Edge>>, pri
         bridges = ArrayList()
     }
 
-    private fun allGraphNodes(): IntRange {
-        return (0 until n)
+    private fun allGraphNodes(): Set<Int> {
+        return graph.keys
     }
 
-    private fun getEdgesOf(at: Int): List<Edge> {
+    private fun getEdgesOf(at: Int): List<Int> {
         return graph[at] ?: emptyList()
     }
 
