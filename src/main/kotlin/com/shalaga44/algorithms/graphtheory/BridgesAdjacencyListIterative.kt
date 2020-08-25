@@ -54,15 +54,6 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
         }
     }
 
-    private fun updatePreviousNodeLowLinkOnCallBack() {
-        val currentNode = stack.pop()
-        val prevNode = currentNode.previousNode
-        prevNode.lowLink = minOf(prevNode.lowLink, currentNode.lowLink)
-        if (prevNode.id < currentNode.lowLink)
-            bridges.add(prevNode to currentNode)
-
-    }
-
     private fun addToCallBackStack(newNode: Int, previousNode: Int) {
         stack.push(newNode)
         stack.push(callBackToken)
@@ -71,6 +62,15 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
         stack.push(newNode)
     }
 
+
+    private fun updatePreviousNodeLowLinkOnCallBack() {
+        val currentNode = stack.pop()
+        val prevNode = currentNode.previousNode
+        prevNode.lowLink = minOf(prevNode.lowLink, currentNode.lowLink)
+        if (prevNode.id < currentNode.lowLink)
+            bridges.add(prevNode to currentNode)
+
+    }
 
     private fun updatePreviousNodeLowLinkFromVisited(visitedNode: Int, previousNode: Int) {
         previousNode.lowLink = minOf(previousNode.lowLink, visitedNode.id)
