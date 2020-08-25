@@ -1,12 +1,12 @@
 package com.shalaga44.algorithms.graphtheory.Utils.DataTypes
 
+import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edges.WeightedEdge
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.set
 
 class WeightedDirectedAdjacencyListGraph : Map<Int, MutableList<WeightedEdge>> {
 
-    private val graph = HashMap<Int, MutableList<WeightedEdge>>()
+    val graphMap = mutableMapOf<Int, MutableList<WeightedEdge>>()
     val N: Int
         get() = allNodes.size
     var E = 0
@@ -17,10 +17,10 @@ class WeightedDirectedAdjacencyListGraph : Map<Int, MutableList<WeightedEdge>> {
         E++
         checkIfNewNodes(to)
         checkIfNewNodes(from)
-        var list = graph[from]
+        var list = graphMap[from]
         if (list == null) {
             list = ArrayList()
-            graph[from] = list
+            graphMap[from] = list
         }
         list.add(WeightedEdge(from, to, cost))
 
@@ -31,28 +31,39 @@ class WeightedDirectedAdjacencyListGraph : Map<Int, MutableList<WeightedEdge>> {
     }
 
     override val entries: Set<Map.Entry<Int, MutableList<WeightedEdge>>>
-        get() = graph.entries
+        get() = graphMap.entries
     override val keys: Set<Int>
-        get() = graph.keys
+        get() = graphMap.keys
     override val size: Int
-        get() = graph.size
+        get() = graphMap.size
     override val values: Collection<MutableList<WeightedEdge>>
-        get() = graph.values
+        get() = graphMap.values
 
     override fun containsKey(key: Int): Boolean {
-        return graph.containsKey(key)
+        return graphMap.containsKey(key)
     }
 
     override fun containsValue(value: MutableList<WeightedEdge>): Boolean {
-        return graph.containsValue(value)
+        return graphMap.containsValue(value)
     }
 
     override fun get(key: Int): MutableList<WeightedEdge>? {
-        return graph[key]
+        return graphMap[key]
     }
 
     override fun isEmpty(): Boolean {
-        return graph.isEmpty()
+        return graphMap.isEmpty()
+    }
+
+    fun asAdjacencyList(): Map<Int, List<Int>> {
+        val adjacencyList = mutableMapOf<Int, List<Int>>()
+
+        graphMap.forEach { (node, edges) ->
+            adjacencyList[node] = edges.map { it.end }
+        }
+
+
+        return adjacencyList
     }
 
 }

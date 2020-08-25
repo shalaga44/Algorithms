@@ -12,7 +12,7 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
     private lateinit var nodesIds: IntArray
     private lateinit var visited: BooleanArray
     private lateinit var lowLinkValues: IntArray
-    private var bridges = mutableListOf<Pair<Int, Int>>()
+    private val bridges = mutableListOf<Pair<Int, Int>>()
     private val previousNodesMap = mutableMapOf<Int, Int>()
 
 
@@ -36,7 +36,7 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
         while (stack.isNotEmpty()) {
             val node = stack.pop()
             if (node.isCallBackStatus())
-                updateCallBackPreviousNodeLowLink()
+                updatePreviousNodeLowLinkOnCallBack()
             else if (node != node.previousNode)
                 visit(node)
         }
@@ -44,16 +44,17 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
 
     private fun visit(node: Int) {
         markAsVisited(node)
-        setNodeId(node)
+        initNodeId(node)
         initLowLinkValue(node)
-        getEdgesOf(node).forEach { newNode ->
-            if (newNode.isNotVisited())
-                addToCallBackStack(newNode, node)
-            else updateCurrentNodeLowLink(newNode, node)
+        getNodesFrom(node).forEach { nextNode ->
+            if (nextNode.isNotVisited())
+                addToCallBackStack(nextNode, node)
+            else
+                updatePreviousNodeLowLinkFromVisited(nextNode, node)
         }
     }
 
-    private fun updateCallBackPreviousNodeLowLink() {
+    private fun updatePreviousNodeLowLinkOnCallBack() {
         val currentNode = stack.pop()
         val prevNode = currentNode.previousNode
         prevNode.lowLink = minOf(prevNode.lowLink, currentNode.lowLink)
@@ -71,9 +72,8 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
     }
 
 
-
-    private fun updateCurrentNodeLowLink(newNode: Int, previousNode: Int) {
-        previousNode.lowLink = minOf(previousNode.lowLink, newNode.id)
+    private fun updatePreviousNodeLowLinkFromVisited(visitedNode: Int, previousNode: Int) {
+        previousNode.lowLink = minOf(previousNode.lowLink, visitedNode.id)
     }
 
     private fun initVars() {
@@ -81,14 +81,13 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
         lowLinkValues = IntArray(n)
         nodesIds = IntArray(n)
         visited = BooleanArray(n)
-        bridges = ArrayList()
     }
 
     private fun allGraphNodes(): Set<Int> {
         return graph.keys
     }
 
-    private fun getEdgesOf(at: Int): List<Int> {
+    private fun getNodesFrom(at: Int): List<Int> {
         return graph[at] ?: emptyList()
     }
 
@@ -96,8 +95,8 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
         at.lowLink = at.id
     }
 
-    private fun setNodeId(at: Int) {
-        at.id = ++id
+    private fun initNodeId(at: Int) {
+        nodesIds[at] = ++id
     }
 
     private fun markAsVisited(at: Int) {
@@ -119,9 +118,8 @@ class BridgesAdjacencyListIterative(private val graph: Map<Int, List<Int>>, priv
     private val Int.previousNode: Int
         get() = previousNodesMap[this] ?: -1
 
-    private var Int.id: Int
+    private val Int.id: Int
         get() = nodesIds[this]
-        set(value) { nodesIds[this] = value }
 
     private var Int.lowLink: Int
         get() = lowLinkValues[this]

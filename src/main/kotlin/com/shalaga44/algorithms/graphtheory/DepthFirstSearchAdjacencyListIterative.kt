@@ -36,8 +36,8 @@ class DepthFirstSearchAdjacencyListIterative(
         count++
         markAsVisited(node)
         getEdgesOf(node).forEach { edge ->
-            if (edge.to.isNotVisited())
-                stack.push(edge.to)
+            if (edge.end.isNotVisited())
+                stack.push(edge.end)
         }
 
     }

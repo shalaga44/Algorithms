@@ -4,11 +4,11 @@ import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edge
 
 
 class WeightedEdge(
-    override val from: Int,
-    override val to: Int,
+    override val start: Int,
+    override val end: Int,
     val cost: Int
 ) : Edge() {
     override fun toString(): String {
-        return "$from >-$cost-> $to"
+        return "$start >-$cost-> $end"
     }
 }

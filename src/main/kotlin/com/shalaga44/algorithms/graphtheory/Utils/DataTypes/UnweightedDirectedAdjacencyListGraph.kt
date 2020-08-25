@@ -57,18 +57,12 @@ class UnweightedDirectedAdjacencyListGraph : Map<Int, MutableList<UnweightedEdge
         return graph.isEmpty()
     }
 
-    fun getUndirectedGraphMap(): Map<Int, MutableList<Edge>> {
-        exportToMyPythonTool()
-        return graph as Map<Int, MutableList<Edge>>
-
-    }
-
     fun exportToMyPythonTool() {
         println()
         allNodes.forEach { i ->
             get(i)?.forEach { j ->
 
-                print("EdgeHolder(${j.from}, ${j.to}),")
+                print("EdgeHolder(${j.start}, ${j.end}),")
             }
 
         }
@@ -80,7 +74,7 @@ class UnweightedDirectedAdjacencyListGraph : Map<Int, MutableList<UnweightedEdge
         val adjacencyList = mutableMapOf<Int, List<Int>>()
 
         graph.forEach { (node, edges) ->
-            adjacencyList[node] = edges.map { it.to }
+            adjacencyList[node] = edges.map { it.end }
         }
 
 

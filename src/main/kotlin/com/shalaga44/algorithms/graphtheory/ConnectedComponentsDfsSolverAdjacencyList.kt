@@ -1,14 +1,13 @@
 package com.shalaga44.algorithms.graphtheory
 
-import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edges.WeightedEdge
+import com.shalaga44.algorithms.graphtheory.Utils.DataTypes.Edge
 import java.util.*
 
 class ConnectedComponentsDfsSolverAdjacencyList(
-    private val graph: Map<Int, List<WeightedEdge>>,
+    private val graph: Map<Int, List<Edge>>,
     private val totalNodes: Int
 ) {
-    // Instead of using boolean array it's super efficient to just use Integer array
-    // and incrementing the token every time you want to set all it's values to false
+
     private val visited = BooleanArray(totalNodes) { false }
 
 
@@ -34,8 +33,8 @@ class ConnectedComponentsDfsSolverAdjacencyList(
         markAsVisited(node)
         setComponents(node)
         getEdgesOf(node).forEach { edge ->
-            if (edge.to.isNotVisited())
-                stack.push(edge.to)
+            if (edge.end.isNotVisited())
+                stack.push(edge.end)
         }
 
     }
@@ -44,7 +43,7 @@ class ConnectedComponentsDfsSolverAdjacencyList(
         components[node] = count
     }
 
-    private fun getEdgesOf(node: Int): List<WeightedEdge> {
+    private fun getEdgesOf(node: Int): List<Edge> {
         return graph[node] ?: emptyList()
     }
 
